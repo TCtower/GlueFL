@@ -1,9 +1,9 @@
-from cmath import log
+# -*- coding: utf-8 -*-
 import logging
 import math
 import os
 import pickle
-import sys
+
 
 import torch.nn as nn
 import numpy as np
@@ -16,14 +16,12 @@ from fedscale.core.config_parser import args
 from fedscale.utils.compressor.topk import TopKCompressor
 
 def set_bn_eval(m):
-    # print(m.__dict__)
     classname = m.__class__.__name__
-    # print(classname)
     if classname.find('BatchNorm2d') != -1 or classname.find('bn') != -1:
         m.eval()
 
-"""A customized client for FedDC"""
-class FedDC_Client(Client):
+"""A customized client for GlueFL"""
+class GlueFL_Client(Client):
     """Basic client component in Federated Learning"""
 
     def load_compensation(self, temp_path):
@@ -95,7 +93,6 @@ class FedDC_Client(Client):
         last_model_copy = [param.data.clone() for param in model.state_dict().values()]
 
         optimizer = torch.optim.SGD(model.parameters(), lr=conf.learning_rate, momentum=0.9, weight_decay=5e-4)
-        # optimizer = torch.optim.SGD(model.parameters(), lr=conf.learning_rate, momentum=0.9)
         if args.model == "lr":
             criterion = torch.nn.CrossEntropyLoss().to(device=device)
         else:
@@ -103,16 +100,9 @@ class FedDC_Client(Client):
 
 
         epoch_train_loss = 1e-4
-
         error_type = None
         completed_steps = 0
 
-        # targets = torch.zeros(32, dtype=torch.long)
-        # for i in range(len(targets)):
-        #     targets[i] = 0
-        
-        # agg_weight = 1.0
-        # test
         # TODO: One may hope to run fixed number of epochs, instead of iterations
         while completed_steps < conf.local_steps:
             for data_pair in client_data:
@@ -160,7 +150,7 @@ class FedDC_Client(Client):
                 if fl_method == 'APF':
                     gradient_tmp[mask_model[idx] != True] = 0.0
                     
-                elif fl_method == 'STC' or (fl_method == 'FedDC' and epochNo % regenerate_epoch == 1):
+                elif fl_method == 'STC' or (fl_method == 'GlueFL' and epochNo % regenerate_epoch == 1):
                     # STC or GlueFL with shared mask regneration
                     gradient_tmp, ctx_tmp = compressor.compress(
                             gradient_tmp)
@@ -186,11 +176,10 @@ class FedDC_Client(Client):
             # model_gradient.append(gradient_tmp.cpu().numpy())
 
 
-        # ===== TODO save compensation =====
+        # ===== save compensation =====
         if args.use_compensation:
             compensation_model = [e.to(device='cpu') for e in compensation_model]
             self.save_compensation(compensation_model, temp_path)
-        # model = model.to(device="cpu")
 
         model_gradient = [g.to(device='cpu').numpy() for g in model_gradient]
         

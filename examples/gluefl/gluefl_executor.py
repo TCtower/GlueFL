@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-
 import logging
 import os
 import pickle
-import sys
 import time
 
 import fedscale.core.channels.job_api_pb2 as job_api_pb2
-from feddc_client import FedDC_Client
+from examples.gluefl.gluefl_client import GlueFL_Client
 from fedscale.core import fllibs
 from fedscale.core import commons
 from fedscale.core.execution.executor import Executor
@@ -16,20 +14,20 @@ from fedscale.core.logger import execution
 from fedscale.core.logger.execution import args
 from fedscale.dataloaders.divide_data import select_dataset
 
-"""A customized executor for FedDC"""
-class FedDC_Executor(Executor):
+"""A customized executor for GlueFL"""
+class GlueFL_Executor(Executor):
     """Each executor takes certain resource to run real training.
        Each run simulates the execution of an individual client"""
 
     def __init__(self, args):
-        super(FedDC_Executor, self).__init__(args)
+        super(GlueFL_Executor, self).__init__(args)
 
         self.temp_mask_path = os.path.join(
             execution.logDir, 'mask_'+str(args.this_rank)+'.pth.tar')
         self.mask = []
 
     def get_client_trainer(self, conf):
-        return FedDC_Client(conf)
+        return GlueFL_Client(conf)
 
     def UpdateMask(self, configs):
         """Receive the broadcasted global mask for current round
@@ -170,5 +168,5 @@ class FedDC_Executor(Executor):
                 self.client_ping()
 
 if __name__ == "__main__":
-    executor = FedDC_Executor(args)
+    executor = GlueFL_Executor(args)
     executor.run()

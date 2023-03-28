@@ -217,7 +217,7 @@ parser.add_argument('--noise-max', default=0.5,
 parser.add_argument('--no-bidirectional', dest='bidirectional', action='store_false', default=True,
                     help='Turn off bi-directional RNNs, introduces lookahead convolution')
 
-# for FedDC
+# for GlueFL
 parser.add_argument('--dataset_total_worker', type=int, default=2800, help="number of total workers in the current dataset")
 parser.add_argument('--total_mask_ratio', type=float, default=1.0, help="total mask ratio used for compression")
 parser.add_argument('--shared_mask_ratio', type=float, default=1.0, help="shared mask ratio used for compression")
@@ -226,7 +226,7 @@ parser.add_argument('--prefetch_estimation_start', type=int, default=5, help="ho
 parser.add_argument('--sampling_strategy', type=str, default="UNIFORM", help="sampling strategy")
 parser.add_argument('--sticky_group_size', type=int, default=100, help="sticky group size used for sticky sampling")
 parser.add_argument('--sticky_group_change_num', type=int, default=20, help="number of new clients per round in sticky sampling")
-parser.add_argument('--fl_method', type=str, default="FedDC", help="FL method")
+parser.add_argument('--fl_method', type=str, default="GlueFL", help="FL method")
 parser.add_argument('--regenerate_epoch', type=int, default=10, help="number of epochs before renegerating mask")
 parser.add_argument('--augmentation_factor', type=float, default=3.0, help="Augmentation factor for finding client compute latency")
 parser.add_argument('--upload_factor', type=float, default=1.0, help="Upload factor for finding client upload latency")

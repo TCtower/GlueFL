@@ -1,4 +1,4 @@
-import os
+# -*- coding: utf-8 -*-
 import sys
 
 import fedscale.core.channels.job_api_pb2 as job_api_pb2
@@ -9,12 +9,12 @@ from fedscale.utils.compressor.topk import TopKCompressor
 from fedscale.utils.eval.round_evaluator import RoundEvaluator
 from fedscale.utils.eval.sparsification import Sparsification
 
-class FedDC_Aggregator(Aggregator):
+class GlueFL_Aggregator(Aggregator):
     """Feed aggregator using tensorflow models"""
     def __init__(self, args):
         super().__init__(args)
         self.dataset_total_worker = args.dataset_total_worker # to distinguish between self.args.total_worker which is the total worker in a round
-        # FIXME make this be the len of client_profiles (or derived from it)
+        # TODO make this be the len of client_profiles (or derived from it)
         self.num_participants = args.num_participants
 
         self.total_mask_ratio = args.total_mask_ratio  # = shared_mask + local_mask
@@ -158,7 +158,7 @@ class FedDC_Aggregator(Aggregator):
                     exe_cost = self.client_manager.getCompletionTime(client_to_run, batch_size=client_cfg.batch_size,
                                                             upload_step=client_cfg.local_steps, upload_size=ul_size, download_size=dl_size)
                     self.round_evaluator.recordClient(client_to_run, dl_size, ul_size, exe_cost)
-                elif self.fl_method == "FedDC":
+                elif self.fl_method == "GlueFL":
                     l = self.last_update_index[client_to_run]
                     r = self.round - 1
 
@@ -703,5 +703,5 @@ class FedDC_Aggregator(Aggregator):
                 time.sleep(0.1)
 
 if __name__ == "__main__":
-    aggregator = FedDC_Aggregator(args)
+    aggregator = GlueFL_Aggregator(args)
     aggregator.run()
