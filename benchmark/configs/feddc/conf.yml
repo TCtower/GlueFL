@@ -12,12 +12,12 @@ worker_ips:
     - 10.0.2.15:[4]
     - 10.0.2.18:[4]
 
-exp_path: $FEDSCALE_HOME/fedscale/core
+exp_path: $FEDSCALE_HOME/examples/gluefl
 
 # Entry function of executor and aggregator under $exp_path
-executor_entry: ../../examples/feddc/feddc_executor.py
+executor_entry: gluefl_executor.py
 
-aggregator_entry: ../../examples/feddc/feddc_aggregator.py
+aggregator_entry: gluefl_aggregator.py
 
 # Fill in if you want to connect to other machines with SSH. Not used for local training.
 auth:
@@ -26,9 +26,9 @@ auth:
 
 # cmd to run before we can indeed run FAR (in order)
 setup_commands:
-    - source $HOME/anaconda3/bin/activate fedscale
+    - $HOME/anaconda3/bin/activate fedscale
     - export NCCL_SOCKET_IFNAME='eth0'
-    - export PYTHONPATH='$FEDSCALE_HOME:$PYTHONPATH'
+    - export PYTHONPATH=$FEDSCALE_HOME:$PYTHONPATH
 
 # ========== Additional job configuration ========== 
 # Default parameters are specified in config_parser.py, wherein more description of the parameter can be found

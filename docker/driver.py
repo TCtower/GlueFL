@@ -88,7 +88,7 @@ def process_cmd(yaml_file, local=False):
     print(f"Starting aggregator on {ps_ip}...")
     with open(f"{job_name}_logging.log", 'a') as fout:
         if local:
-            subprocess.Popen(f'{ps_cmd}', shell=True, stdout=fout, stderr=fout)
+            subprocess.Popen(f'{setup_cmd} {ps_cmd}', shell=True, stdout=fout, stderr=fout)
         else:
             subprocess.Popen(f'ssh {submit_user}{ps_ip} "{setup_cmd} {ps_cmd}"',
                              shell=True, stdout=fout, stderr=fout)
@@ -108,7 +108,7 @@ def process_cmd(yaml_file, local=False):
                 with open(f"{job_name}_logging.log", 'a') as fout:
                     time.sleep(2)
                     if local:
-                        subprocess.Popen(f'{worker_cmd}',
+                        subprocess.Popen(f'{setup_cmd} {worker_cmd}',
                                          shell=True, stdout=fout, stderr=fout)
                     else:
                         subprocess.Popen(f'ssh {submit_user}{worker} "{setup_cmd} {worker_cmd}"',
