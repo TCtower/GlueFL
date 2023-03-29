@@ -427,6 +427,7 @@ fi
 }
 
 Download() {
+    mkdir -p ${DIR}
     for data in $ARGS
     do  
         echo "Downloading ${data}"
