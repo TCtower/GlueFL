@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 
+from examples.gluefl.gluefl_client_manager import GlueflClientManager
 import fedscale.core.channels.job_api_pb2 as job_api_pb2
 from fedscale.core import commons
 from fedscale.core.aggregation.aggregator import Aggregator
@@ -42,6 +43,20 @@ class GlueFL_Aggregator(Aggregator):
         self.slowest_client_id = -1
         self.round_evaluator = RoundEvaluator()
         # logging.info("Good Init")
+
+    def init_client_manager(self, args):
+        """ Initialize Gluefl client sampler
+        Args:
+            args (dictionary): Variable arguments for fedscale runtime config. defaults to the setup in arg_parser.py
+        
+        Returns:
+            GlueflClientManager: The client manager class
+        """
+
+        # sample_mode: random or oort
+        client_manager = GlueflClientManager(args.sample_mode, args=args)
+
+        return client_manager
 
     def init_mask(self):
         self.shared_mask = []

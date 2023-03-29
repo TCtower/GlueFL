@@ -1,8 +1,5 @@
 
-import logging
-
-
-class Client(object):
+class ClientMetadata(object):
 
     def __init__(self, hostId, clientId, speed, augmentation_factor=3.0, upload_factor=1.0, download_factor=1.0, traces=None):
         self.hostId = hostId
