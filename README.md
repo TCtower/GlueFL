@@ -162,4 +162,27 @@ Repo Root
 Please read and/or cite as appropriate to use FedScale code or data or learn more about FedScale.
 
 ```bibtex
-@inproceedings{f
+@inproceedings{fedscale-icml22,
+  title={{FedScale}: Benchmarking Model and System Performance of Federated Learning at Scale},
+  author={Fan Lai and Yinwei Dai and Sanjay S. Singapuram and Jiachen Liu and Xiangfeng Zhu and Harsha V. Madhyastha and Mosharaf Chowdhury},
+  booktitle={International Conference on Machine Learning (ICML)},
+  year={2022}
+}
+```
+
+and  
+
+```bibtex
+@inproceedings{oort-osdi21,
+  title={Oort: Efficient Federated Learning via Guided Participant Selection},
+  author={Fan Lai and Xiangfeng Zhu and Harsha V. Madhyastha and Mosharaf Chowdhury},
+  booktitle={USENIX Symposium on Operating Systems Design and Implementation (OSDI)},
+  year={2021}
+}
+```
+
+## Contributions and Communication
+Please submit [issues](https://github.com/SymbioticLab/FedScale/issues) or [pull requests](https://github.com/SymbioticLab/FedScale/pulls) as you find bugs or improve FedScale.
+
+If you have any questions or comments, please join our [Slack](https://join.slack.com/t/fedscale/shared_invite/zt-uzouv5wh-ON8ONCGIzwjXwMYDC2fiKw) channel, or email us ([fedscale@googlegroups.com](mailto:fedscale@googlegroups.com)). 
+
