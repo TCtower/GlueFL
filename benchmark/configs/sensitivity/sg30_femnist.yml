@@ -33,15 +33,15 @@ setup_commands:
 
 job_conf: 
     - job_name: sg30_femnist                 # Generate logs under this folder: log_path/job_name/time_stamp
-    - log_path: /mnt/fl/benchmark # Path of log files
+    - log_path: $FEDSCALE_HOME/benchmark # Path of log files
     - num_participants: 30        # Number of participants per round, we use K=100 in our paper, large K will be much slower
     - dataset_total_worker: 2800
     - data_set: femnist                 # Dataset: openImg, google_speech, stackoverflow
-    - data_dir: /mnt/fl/data/femnist    # Path of the dataset
-    - data_map_file: /mnt/fl/data/femnist/client_data_mapping/train.csv           # Allocation of data to each client, turn to iid setting if not provided
-    - device_conf_file: /mnt/fl/data/device_info/client_device_capacity_ul_dl     # Path of the client trace
-    - device_avail_file: /mnt/fl/data/device_info/client_behave_trace
-    - compensation_dir: /mnt/fl/benchmark/compensation
+    - data_dir: $FEDSCALE_HOME/benchmark/dataset/data/femnist    # Path of the dataset
+    - data_map_file: $FEDSCALE_HOME/benchmark/dataset/data/femnist/client_data_mapping/train.csv           # Allocation of data to each client, turn to iid setting if not provided
+    - device_conf_file: $FEDSCALE_HOME/benchmark/dataset/data/device_info/client_device_capacity_ul_dl     # Path of the client trace
+    - device_avail_file: $FEDSCALE_HOME/benchmark/dataset/data/device_info/client_behave_trace
+    - compensation_dir: $FEDSCALE_HOME/benchmark/compensation # Stores client compensation data. Warning: may take up a lot of storage space! (> 50GB)
     - model: shufflenet_v2_x2_0             # Models: e.g., shufflenet_v2_x2_0, mobilenet_v2, resnet34, albert-base-v2
     - eval_interval: 10                     # How many rounds to run a testing on the testing set
     - rounds: 1000                          # Number of rounds to run this training. We use 1000 in our paper, while it may converge w/ ~400 rounds
@@ -61,5 +61,5 @@ job_conf:
     - total_mask_ratio: 0.2
     - shared_mask_ratio: 0.16
     - augmentation_factor: 0.4
-    - download_factor: 0.8
-    - upload_factor: 1.2
+    - download_factor: 1.0
+    - upload_factor: 1.0

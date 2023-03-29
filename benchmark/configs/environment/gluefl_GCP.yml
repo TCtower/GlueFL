@@ -10,12 +10,12 @@ ps_ip: 127.0.0.1
 worker_ips: 
     - 127.0.0.1:[3] # worker_ip: [(# processes on gpu) for gpu in available_gpus] eg. 10.0.0.2:[4,4,4,4] This node has 4 gpus, each gpu has 4 processes. 
 
-exp_path: ~/FedScale/core
+exp_path: $FEDSCALE_HOME/examples/gluefl
 
 # Entry function of executor and aggregator under $exp_path
-executor_entry: ./examples/dry_run/customized_executor.py
+executor_entry: gluefl_executor.py
 
-aggregator_entry: aggregator.py
+aggregator_entry: gluefl_aggregator.py
 
 auth:
     ssh_user: ""
@@ -23,7 +23,9 @@ auth:
 
 # cmd to run before we can indeed run FAR (in order)
 setup_commands:
-    - source /mnt/anaconda3/bin/activate fedscale
+    - $HOME/anaconda3/bin/activate fedscale
+    - export NCCL_SOCKET_IFNAME='eth0'
+    - export PYTHONPATH=$FEDSCALE_HOME:$PYTHONPATH
 
 # ========== Additional job configuration ========== 
 # Default parameters are specified in argParser.py, wherein more description of the parameter can be found
@@ -32,31 +34,31 @@ job_conf:
     - job_name: gluefl_gcp                   # Generate logs under this folder: log_path/job_name/time_stamp
     - log_path: /mnt/fl # Path of log files
     - total_worker: 30                      # Number of participants per round, we use K=100 in our paper, large K will be much slower
+    - dataset_total_worker: 2800
     - data_set: femnist                     # Dataset: openImg, google_speech, stackoverflow
-    - data_dir: /mnt/fl/data/femnist    # Path of the dataset
-    - data_map_file: /mnt/fl/data/femnist/client_data_mapping/train.csv              # Allocation of data to each client, turn to iid setting if not provided
-    - device_conf_file: /home/fedlearn/FedScale/dataset/device_info/client_device_capacity_ul_dl_GCP     # Path of the client trace
-    - device_avail_file: /mnt/fl/data/device_info/client_behave_trace
+    - data_dir: $FEDSCALE_HOME/benchmark/dataset/data/femnist    # Path of the dataset
+    - data_map_file: $FEDSCALE_HOME/benchmark/dataset/data/femnist/client_data_mapping/train.csv              # Allocation of data to each client, turn to iid setting if not provided
+    - device_conf_file: $FEDSCALE_HOME/benchmark/dataset/data/device_info/client_device_capacity_ul_dl_GCP     # Path of the client trace
+    - device_avail_file: $FEDSCALE_HOME/benchmark/dataset/data/device_info/client_behave_trace
+    - compensation_dir: $FEDSCALE_HOME/benchmark/compensation # Stores client compensation data. Warning: may take up a lot of storage space! (> 50GB)
     - model: shufflenet_v2_x2_0                            # Models: e.g., shufflenet_v2_x2_0, mobilenet_v2, resnet34, albert-base-v2# - gradient_policy: yogi                 # {"fed-yogi", "fed-prox", "fed-avg"}, "fed-avg" by default
     - eval_interval: 5                     # How many rounds to run a testing on the testing set
-    - epochs: 300                          # Number of rounds to run this training. We use 1000 in our paper, while it may converge w/ ~400 rounds
+    - epochs: 1000                          # Number of rounds to run this training. We use 1000 in our paper, while it may converge w/ ~400 rounds
     - filter_less: 22                       # Remove clients w/ less than 21 samples
     - num_loaders: 2
     - local_steps: 10
     - learning_rate: 0.01
     - batch_size: 20
     - test_bsz: 32
-    - use_cuda: True
     - overcommitment: 1.3
-    - dataset_total_worker: 2800
+    - fl_method: GlueFL
+    - sampling_strategy: STICKY
+    - sticky_group_size: 60
+    - use_cuda: True
+    - sticky_group_change_num: 6
     - total_mask_ratio: 0.2
     - shared_mask_ratio: 0.16
-    - sticky_group_size: 60
-    - change_num: 6
-    - max_prefetch_round: 5
-    - sampling_strategy: STICKY
-    - fl_method: FedDC
     - augmentation_factor: 0.4
-    - download_factor: 0.8
-    - upload_factor: 1.2
+    - download_factor: 1.0
+    - upload_factor: 1.0
     - regenerate_epoch: 10
