@@ -56,7 +56,7 @@ job_conf:
     - sampling_strategy: UNIFORM
     - sticky_group_size: 120
     - sticky_group_change_num: 6
-    - use_cuda: False
+    - use_cuda: True
     - total_mask_ratio: 0.3
     - shared_mask_ratio: 0.24
     - augmentation_factor: 0.4
