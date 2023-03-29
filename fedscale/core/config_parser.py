@@ -228,12 +228,18 @@ parser.add_argument('--sticky_group_size', type=int, default=100, help="sticky g
 parser.add_argument('--sticky_group_change_num', type=int, default=20, help="number of new clients per round in sticky sampling")
 parser.add_argument('--fl_method', type=str, default="GlueFL", help="FL method")
 parser.add_argument('--regenerate_epoch', type=int, default=10, help="number of epochs before renegerating mask")
-parser.add_argument('--augmentation_factor', type=float, default=3.0, help="Augmentation factor for finding client compute latency")
 parser.add_argument('--upload_factor', type=float, default=1.0, help="Upload factor for finding client upload latency")
 parser.add_argument('--download_factor', type=float, default=1.0, help="Download factor for finding client download latency")
 parser.add_argument('--compensation_dir', type=str, default="/mnt/fl/benchmark/compensation", help="Directory for storing compensation")
 parser.add_argument('--overcommit_weight', type=float, default=-1, help="How much overcommitment is allocated to sticky vs non-sticky group. If -1, then overcommitment is applied uniformly/")
 parser.add_argument('--use_compensation', type=str, default='True')
+# A note on the augmentation_factor setting:
+# For our experiments, we set the augmentation_factor to 0.4 so the compute time is 0.4X of what is specified in the client_device_capacity dataset
+# There are two reasons for this setting: 
+# First, our work focuses on the setting where communication is the main bottleneck. Section 5.4 considers other scenarios where computation becomes a more significant bottleneck.
+# Second, the client_device_capacity dataset from FedScale was outdated by ~2 years at the time of our experiments,
+# mobile processor ML training performance have improved significantly over this period. (https://ai-benchmark.com/ranking.html)
+parser.add_argument('--augmentation_factor', type=float, default=3.0, help="Augmentation factor for finding client compute latency")
 
 args, unknown = parser.parse_known_args()
 args.use_cuda = eval(args.use_cuda)
