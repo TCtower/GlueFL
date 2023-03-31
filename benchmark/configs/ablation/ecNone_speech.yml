@@ -64,3 +64,4 @@ job_conf:
     - download_factor: 1.0
     - upload_factor: 1.0
     - overcommit_weight: 0.4 # The % of overcommitted clients allocated to the change group
+    - use_compensation: False
