@@ -1,42 +1,11 @@
 import logging
-from typing import Dict
-from examples.gluefl.gluefl_client_metadata import GlueflClientMetadata
 from fedscale.core.client_manager import clientManager
 
 
 class GlueflClientManager(clientManager):
     def __init__(self, mode, args, sample_seed=233):
         super().__init__(mode, args, sample_seed)
-        self.Clients: Dict[str, GlueflClientMetadata]= {}
         self.sticky_group = []
-
-    def register_client(self, hostId: int, clientId: int, size: int, speed: Dict[str, float], duration: float=1) -> None:
-        """Register client information to the client manager.
-        Args: 
-            hostId (int): executor Id.
-            clientId (int): client Id.
-            size (int): number of samples on this client.
-            speed (Dict[str, float]): device speed (e.g., compuutation and communication).
-            duration (float): execution latency.
-        """
-        uniqueId = self.getUniqueId(hostId, clientId)
-        user_trace = None if self.user_trace is None else self.user_trace[self.user_trace_keys[int(
-            clientId) % len(self.user_trace)]]
-
-        self.Clients[uniqueId] = GlueflClientMetadata(hostId, clientId, speed, augmentation_factor=self.args.augmentation_factor, upload_factor=self.args.upload_factor, download_factor=self.args.download_factor, traces=user_trace)
-
-        # remove clients
-        if size >= self.filter_less and size <= self.filter_more:
-            self.feasibleClients.append(clientId)
-            self.feasible_samples += size
-
-            if self.mode == "oort":
-                feedbacks = {'reward': min(size, self.args.local_steps*self.args.batch_size),
-                             'duration': duration,
-                             }
-                self.ucbSampler.register_client(clientId, feedbacks=feedbacks)
-        else:
-            del self.Clients[uniqueId]
 
     def update_sticky_group(self, new_clients):
         self.rng.shuffle(self.sticky_group)
