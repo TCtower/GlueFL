@@ -22,27 +22,20 @@ def set_bn_eval(m):
 
 """A customized client for GlueFL"""
 class GlueFL_Client(Client):
-    """Basic client component in Federated Learning"""
-
+    
     def load_compensation(self, temp_path):
-        # load last global model
+        # load compensation vector
         with open(temp_path, 'rb') as model_in:
             model = pickle.load(model_in)
         return model
     
     def save_compensation(self, model, temp_path):
-        # serialized_data = pickle.dumps(model)
-        # model = pickle.loads(serialized_data)
+        # save compensation vector
         model = [i.to(device='cpu') for i in model]
         with open(temp_path, 'wb') as model_out:
             pickle.dump(model, model_out)
 
-    # def load_running(self, temp_path):
-    #     with open(temp_path, 'rb') as model_in:
-    #         grad = pickle.load(model_in)
-    #     return grad
-
-    def train(self, client_data, model: torch.nn.Module, conf, mask_model, epochNo, agg_weight):
+    def train(self, client_data, model: torch.nn.Module, conf, mask_model, epochNo, agg_weight, sticky_client_flag):
         clientId = conf.clientId
         device = conf.device
 
@@ -52,31 +45,19 @@ class GlueFL_Client(Client):
         regenerate_epoch = args.regenerate_epoch
         compensation_dir = os.path.join(args.compensation_dir, args.job_name, args.time_stamp)
 
-        trained_unique_samples = min(len(client_data.dataset), conf.local_steps* conf.batch_size)
+        trained_unique_samples = min(len(client_data.dataset), conf.local_steps * conf.batch_size)
 
-
-        logging.info(f"Start to train (CLIENT: {clientId}) (WEIGHT: {agg_weight}) (LR: {conf.learning_rate})...")
-        # logging.info(f"{total_mask_ratio} {fl_method} {regenerate_epoch}")
+        logging.info(f"Start to train (CLIENT: {clientId}) (STICKY: {sticky_client_flag}) (WEIGHT: {agg_weight}) (LR: {conf.learning_rate})...")
 
         model = model.to(device=device)
         model.train()
-        # for module in model.modules():
-        #     # print(module)
-        #     if isinstance(module, nn.BatchNorm2d):
-        #         if hasattr(module, 'weight'):
-        #             module.weight.requires_grad_(False)
-        #         if hasattr(module, 'bias'):
-        #             module.bias.requires_grad_(False)
-        #         module.eval()
-        # model.apply(set_bn_eval)
 
         # ===== load compensation =====
         if args.use_compensation:
             os.makedirs(compensation_dir, exist_ok=True)
             temp_path = os.path.join(compensation_dir, 'compensation_c'+str(clientId)+'.pth.tar')
             compensation_model = []
-            # temp_path_2 = os.path.join(logDir, 'gradient_c'+str(clientId)+'.pth.tar')
-            if (agg_weight > 100.0) or (not os.path.exists(temp_path)):
+            if (sticky_client_flag == False) or (not os.path.exists(temp_path)):
                 # create a new compensation model
                 for idx, param in enumerate(model.state_dict().values()):
                     tmp = torch.zeros_like(param.data).to(device=device)
@@ -118,6 +99,7 @@ class GlueFL_Client(Client):
                 # only measure the loss of the first epoch
                 epoch_train_loss = (1. - conf.loss_decay) * epoch_train_loss + conf.loss_decay * loss.item()
                 # logging.info(f"local {clientId} {completed_steps} {loss.item()}")
+
                 # ========= Define the backward loss ==============
                 optimizer.zero_grad()
                 loss.backward()
@@ -128,9 +110,6 @@ class GlueFL_Client(Client):
                 if completed_steps == conf.local_steps:
                     break
 
-        # state_dicts = model.state_dict()
-        # model_param = {p:state_dicts[p].data.cpu().numpy() for p in state_dicts} # TODO Not used
-
         model_gradient = []
         compressor = TopKCompressor(compress_ratio=total_mask_ratio)
         # ===== calculate gradient =====
@@ -140,7 +119,8 @@ class GlueFL_Client(Client):
             gradient_tmp = (last_model_copy[idx] - param.data).type(torch.FloatTensor).to(device=device)
 
             if not (('num_batches_tracked' in keys[idx]) or ('running' in keys[idx])):
-                # compensation_model[idx] = compensation_model[idx].to('cpu')
+
+                # ===== apply compensation =====
                 if args.use_compensation:
                     gradient_tmp += (compensation_model[idx] / agg_weight)
                 
@@ -167,14 +147,9 @@ class GlueFL_Client(Client):
                     gradient_tmp[largest_tmp != True] = 0.0
 
             # ===== update compensation ======
-            # gradient_original = gradient_original.to('cpu')
-            # compensation_model[idx] = compensation_model[idx].to('cpu')
-            # gradient_tmp = gradient_tmp.to('cpu')
             if args.use_compensation:
                 compensation_model[idx] = (gradient_original.type(torch.FloatTensor) - gradient_tmp.type(torch.FloatTensor)).type(torch.FloatTensor) * agg_weight
             model_gradient.append(gradient_tmp)
-            # model_gradient.append(gradient_tmp.cpu().numpy())
-
 
         # ===== save compensation =====
         if args.use_compensation:

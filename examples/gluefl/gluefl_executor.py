@@ -50,7 +50,7 @@ class GlueFL_Executor(Executor):
             mask = pickle.load(mask_in)
         return mask
 
-    def training_handler(self, clientId, conf, model=None, agg_weight=None):
+    def training_handler(self, clientId, conf, model=None, agg_weight=None, sticky_client_flag=None):
         """Train model given client id
         
         Args:
@@ -63,11 +63,6 @@ class GlueFL_Executor(Executor):
         """
         # load last global model and mask
         client_model = self.load_global_model() if model is None else model
-        # for idx, param in enumerate(client_model.state_dict().values()): 
-        #     if idx == 0:
-        #         print("check", self.executor_id, clientId, param.data)
-        #         break
-        
         mask_model = self.load_shared_mask()
 
         conf.clientId, conf.device = clientId, self.device
@@ -84,7 +79,8 @@ class GlueFL_Executor(Executor):
 
             client = self.get_client_trainer(conf)
             train_res = client.train(
-                client_data=client_data, model=client_model, conf=conf, mask_model=mask_model, epochNo=self.round, agg_weight=agg_weight)
+                client_data=client_data, model=client_model, conf=conf, mask_model=mask_model, epochNo=self.round, 
+                agg_weight=agg_weight, sticky_client_flag=sticky_client_flag)
 
         return train_res
 
@@ -98,7 +94,8 @@ class GlueFL_Executor(Executor):
             tuple (int, dictionary): The client id and train result
 
         """
-        client_id, train_config, agg_weight = config['client_id'], config['task_config'], config['agg_weight']
+        client_id, train_config = config['client_id'], config['task_config'] 
+        agg_weight, sticky_client_flag = config['agg_weight'], config['sticky_client_flag']
 
         model = None
         if 'model' in train_config and train_config['model'] is not None:
@@ -106,7 +103,7 @@ class GlueFL_Executor(Executor):
 
         client_conf = self.override_conf(train_config)
         train_res = self.training_handler(
-            clientId=client_id, conf=client_conf, model=model, agg_weight=agg_weight)
+            clientId=client_id, conf=client_conf, model=model, agg_weight=agg_weight, sticky_client_flag=sticky_client_flag)
 
         # Report execution completion meta information
         response = self.aggregator_communicator.stub.CLIENT_EXECUTE_COMPLETION(

@@ -443,7 +443,10 @@ class GlueFL_Aggregator(Aggregator):
         model = None
         if next_clientId != None:
             config = self.get_client_conf(next_clientId)
-            train_config = {'client_id': next_clientId, 'task_config': config, "agg_weight": (self.get_gradient_weight(next_clientId) * float(self.dataset_total_worker))}
+            train_config = {'client_id': next_clientId, 
+                            'task_config': config, 
+                            'agg_weight': (self.get_gradient_weight(next_clientId) * float(self.dataset_total_worker)),
+                            'sticky_client_flag': (next_clientId in self.sampled_sticky_client_set)}
         return train_config, model
     
     def CLIENT_PING(self, request, context):
@@ -503,15 +506,15 @@ class GlueFL_Aggregator(Aggregator):
         )
 
 
-    def select_participants_sticky(self, select_num_participants, overcommitment=1.0):
-        self.sampled_sticky_clients, self.sampled_changed_clients = self.client_manager.select_participants_sticky(
-                round(select_num_participants*overcommitment),
-                cur_time=self.global_virtual_clock,
-                K=self.sticky_group_size,
-                change_num=round(self.sticky_group_change_num*overcommitment)
-            )
-        self.sampled_sticky_client_set = set(self.sampled_sticky_clients)
-        return self.sampled_sticky_clients, self.sampled_changed_clients
+    # def select_participants_sticky(self, select_num_participants, overcommitment=1.0):
+    #     self.sampled_sticky_clients, self.sampled_changed_clients = self.client_manager.select_participants_sticky(
+    #             round(select_num_participants*overcommitment),
+    #             cur_time=self.global_virtual_clock,
+    #             K=self.sticky_group_size,
+    #             change_num=round(self.sticky_group_change_num*overcommitment)
+    #         )
+    #     self.sampled_sticky_client_set = set(self.sampled_sticky_clients)
+    #     return self.sampled_sticky_clients, self.sampled_changed_clients
 
 
     def round_completion_handler(self):

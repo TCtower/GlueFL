@@ -1,5 +1,8 @@
 import torch
 
+# ===== Top-K implementation =====
+# From "GRACE: A Compressed Communication Framework for Distributed Machine Learning0"  
+
 def sparsify(tensor, compress_ratio):
     tensor = tensor.flatten()
     k = max(1, int(tensor.numel() * compress_ratio))
