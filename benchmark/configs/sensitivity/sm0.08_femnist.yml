@@ -60,6 +60,4 @@ job_conf:
     - use_cuda: True
     - total_mask_ratio: 0.2
     - shared_mask_ratio: 0.08
-    - augmentation_factor: 0.4
-    - download_factor: 1.0
-    - upload_factor: 1.0
+    - use_compensation: True

@@ -60,9 +60,6 @@ job_conf:
     - use_cuda: True
     - total_mask_ratio: 0.3
     - shared_mask_ratio: 0.24
-    - augmentation_factor: 0.4
-    - download_factor: 1.0
-    - upload_factor: 1.0
     - regenerate_epoch: 20
-        - overcommit_weight: 0.4 # The % of overcommitted clients allocated to the change group
+    - overcommit_weight: 0.4 # The % of overcommitted clients allocated to the change group
 

@@ -60,8 +60,5 @@ job_conf:
     - use_cuda: True
     - total_mask_ratio: 0.3
     - shared_mask_ratio: 0.24
-    - augmentation_factor: 0.4
-    - download_factor: 1.0
-    - upload_factor: 1.0
     - overcommit_weight: 0.4 # The % of overcommitted clients allocated to the change group
     # To disable reweighting in compensation, please set 'agg_weight = 1.0' in gluefl_client.py

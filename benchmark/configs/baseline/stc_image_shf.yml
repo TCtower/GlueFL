@@ -59,7 +59,5 @@ job_conf:
     - sticky_group_change_num: 20
     - fl_method: STC
     - sampling_strategy: UNIFORM
-    - augmentation_factor: 0.4
-    - download_factor: 1.0
-    - upload_factor: 1.0
     - regenerate_epoch: 10
+    - use_compensation: True

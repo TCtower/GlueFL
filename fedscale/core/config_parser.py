@@ -233,13 +233,14 @@ parser.add_argument('--download_factor', type=float, default=1.0, help="Download
 parser.add_argument('--compensation_dir', type=str, default="/mnt/fl/benchmark/compensation", help="Directory for storing compensation")
 parser.add_argument('--overcommit_weight', type=float, default=-1, help="How much overcommitment is allocated to sticky vs non-sticky group. If -1, then overcommitment is applied uniformly/")
 parser.add_argument('--use_compensation', type=str, default='True')
+
 # A note on the augmentation_factor setting:
 # For our experiments, we set the augmentation_factor to 0.4 so the compute time is 0.4X of what is specified in the client_device_capacity dataset
 # There are two reasons for this setting: 
-# First, our work focuses on the setting where communication is the main bottleneck. Section 5.4 considers other scenarios where computation becomes a more significant bottleneck.
-# Second, the client_device_capacity dataset from FedScale was outdated by ~2 years at the time of our experiments,
-# mobile processor ML training performance have improved significantly over this period. (https://ai-benchmark.com/ranking.html)
-parser.add_argument('--augmentation_factor', type=float, default=3.0, help="Augmentation factor for finding client compute latency")
+# First, mobile processor ML training performance have improved significantly over this period. 
+# This setting is consistent with the latest device computation capacity. (https://ai-benchmark.com/ranking.html)
+# Second, our work focuses on the setting where communication is the main bottleneck. Section 5.4 considers other scenarios where computation becomes a more significant bottleneck.
+parser.add_argument('--augmentation_factor', type=float, default=0.4, help="Augmentation factor for finding client compute latency")
 
 args, unknown = parser.parse_known_args()
 args.use_cuda = eval(args.use_cuda)
