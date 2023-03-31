@@ -53,6 +53,7 @@ job_conf:
     - batch_size: 20
     - test_bsz: 32
     - overcommitment: 1.3
+    - overcommit_weight: 0.4
     - fl_method: FedAvg
     - sampling_strategy: UNIFORM
     - sticky_group_size: 120
