@@ -50,11 +50,11 @@ You can view the results for an experiment by using the following commands with 
 
 ```shell
 # To view the training loss
-cat job_name_logging |grep 'Training loss'
+cat job_name_logging | grep 'Training loss'
 # To view the top-1 and top-5 accuracy
-cat job_name_logging |grep 'FL Testing'
+cat job_name_logging | grep 'FL Testing'
 # To view the current bandwidth usage and training time
-cat job\_name\_logging |grep -A 9 "Wall clock:"
+cat job_name_logging | grep -A 9 "Wall clock:"
 ```
 
 You can also find logs just for the aggregator and executor in the directory specified by the `log_path` setting.
