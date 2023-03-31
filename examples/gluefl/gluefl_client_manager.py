@@ -38,6 +38,10 @@ class GlueflClientManager(clientManager):
         else:
             del self.Clients[uniqueId]
 
+    def update_sticky_group(self, new_clients):
+        self.rng.shuffle(self.sticky_group)
+        self.sticky_group = self.sticky_group[:-len(new_clients)] + new_clients
+
     # Sticky sampling
     def select_participants_sticky(self, numOfClients, cur_time = 0, K = 0, change_num = 0, overcommit=1.3):
         self.count += 1

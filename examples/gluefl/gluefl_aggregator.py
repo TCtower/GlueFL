@@ -627,11 +627,11 @@ class GlueFL_Aggregator(Aggregator):
             self.slowest_client_id = self.clients_to_run[-1]
 
             # Make sure that there are change_num number of new clients added each epoch 
-            # logging.info(f"Old group {self.client_manager.cur_group}")
+            # logging.info(f"Old group {self.client_manager.sticky_group}")
             # logging.info(f"change to run {change_to_run}")
             if self.round > 1:
-                self.client_manager.cur_group = self.client_manager.cur_group[:-len(change_to_run)] + change_to_run
-            # logging.info(f"New group {self.client_manager.cur_group}")
+                self.client_manager.update_sticky_group(change_to_run)
+            # logging.info(f"New group {self.client_manager.sticky_group}")
         else:
             self.sampled_participants = self.select_participants(
                 select_num_participants=self.args.num_participants, overcommitment=self.args.overcommitment)
