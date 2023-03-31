@@ -62,3 +62,4 @@ job_conf:
     - download_factor: 1.0
     - upload_factor: 1.0
     - regenerate_epoch: 10
+    - use_compensation: False

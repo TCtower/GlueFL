@@ -63,3 +63,4 @@ job_conf:
     - augmentation_factor: 0.4
     - download_factor: 1.0
     - upload_factor: 1.0
+    - use_compensation: False
