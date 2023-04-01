@@ -82,13 +82,13 @@ def process_cmd(yaml_file, local=False):
     ps_cmd = f" python {yaml_conf['exp_path']}/{yaml_conf['aggregator_entry']} {conf_script} --this_rank=0 --num_executors={total_gpu_processes} --executor_configs={executor_configs} "
     print(ps_cmd)
     
-    with open(f"{job_name}_logging.log", 'wb') as fout:
+    with open(f"{job_name}_logging", 'wb') as fout:
         pass
 
     print(f"Starting aggregator on {ps_ip}...")
-    with open(f"{job_name}_logging.log", 'a') as fout:
+    with open(f"{job_name}_logging", 'a') as fout:
         if local:
-            subprocess.Popen(f'{ps_cmd}', shell=True, stdout=fout, stderr=fout)
+            subprocess.Popen(f'{setup_cmd} {ps_cmd}', shell=True, stdout=fout, stderr=fout)
         else:
             subprocess.Popen(f'ssh {submit_user}{ps_ip} "{setup_cmd} {ps_cmd}"',
                              shell=True, stdout=fout, stderr=fout)
@@ -105,10 +105,10 @@ def process_cmd(yaml_file, local=False):
                 worker_cmd = f" python {yaml_conf['exp_path']}/{yaml_conf['executor_entry']} {conf_script} --this_rank={rank_id} --num_executors={total_gpu_processes} --cuda_device=cuda:{cuda_id} "
                 rank_id += 1
 
-                with open(f"{job_name}_logging.log", 'a') as fout:
+                with open(f"{job_name}_logging", 'a') as fout:
                     time.sleep(2)
                     if local:
-                        subprocess.Popen(f'{worker_cmd}',
+                        subprocess.Popen(f'{setup_cmd} {worker_cmd}',
                                          shell=True, stdout=fout, stderr=fout)
                     else:
                         subprocess.Popen(f'ssh {submit_user}{worker} "{setup_cmd} {worker_cmd}"',
@@ -137,7 +137,7 @@ def terminate(job_name):
 
     for vm_ip in job_meta['vms']:
         print(f"Shutting down job on {vm_ip}")
-        with open(f"{job_name}_logging.log", 'a') as fout:
+        with open(f"{job_name}_logging", 'a') as fout:
             subprocess.Popen(f'ssh {job_meta["user"]}{vm_ip} "~/anaconda3/bin/python {current_path}/shutdown.py {job_name}"',
                              shell=True, stdout=fout, stderr=fout)
 

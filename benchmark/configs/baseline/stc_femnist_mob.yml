@@ -1,0 +1,63 @@
+# Configuration file of FAR training experiment
+
+# ========== Cluster configuration ========== 
+# ip address of the parameter server (need 1 GPU process)
+ps_ip: 127.0.0.1
+
+# ip address of each worker:# of available gpus process on each gpu in this node
+# Note that if we collocate ps and worker on same GPU, then we need to decrease this number of available processes on that GPU by 1
+# E.g., master node has 4 available processes, then 1 for the ps, and worker should be set to: worker:3
+worker_ips: 
+    - 127.0.0.1:[3]
+
+exp_path: $FEDSCALE_HOME/examples/gluefl
+
+# Entry function of executor and aggregator under $exp_path
+executor_entry: gluefl_executor.py
+
+aggregator_entry: gluefl_aggregator.py
+
+# Fill in if you want to connect to other machines with SSH. Not used for local training.
+auth:
+    ssh_user: "fedlearn"
+    ssh_private_key: ~/.ssh/id_rsa
+
+# cmd to run before we can indeed run FAR (in order)
+setup_commands:
+    - $HOME/anaconda3/bin/activate fedscale
+    - export NCCL_SOCKET_IFNAME='eth0'
+    - export PYTHONPATH=$FEDSCALE_HOME:$PYTHONPATH
+
+# ========== Additional job configuration ========== 
+# Default parameters are specified in config_parser.py, wherein more description of the parameter can be found
+
+job_conf: 
+    - job_name: stc_femnist_mob # Generate logs under this folder: log_path/job_name/time_stamp
+    - log_path: $FEDSCALE_HOME/benchmark  # Path of log files
+    - num_participants: 30         # Number of participants per round, we use K=100 in our paper, large K will be much slower
+    - dataset_total_worker: 2800
+    - data_set: femnist                 # Dataset: openImg, google_speech, stackoverflow
+    - data_dir: $FEDSCALE_HOME/benchmark/dataset/data/femnist    # Path of the dataset
+    - data_map_file: $FEDSCALE_HOME/benchmark/dataset/data/femnist/client_data_mapping/train.csv           # Allocation of data to each client, turn to iid setting if not provided
+    - device_conf_file: $FEDSCALE_HOME/benchmark/dataset/data/device_info/client_device_capacity_ul_dl     # Path of the client trace
+    - device_avail_file: $FEDSCALE_HOME/benchmark/dataset/data/device_info/client_behave_trace
+    - compensation_dir: $FEDSCALE_HOME/benchmark/compensation # Stores client compensation data. Warning: may take up a lot of storage space! (> 50GB)
+    - model: mobilenet_v2                   # Models: e.g., shufflenet_v2_x2_0, mobilenet_v2, resnet34, albert-base-v2
+    - eval_interval: 10                     # How many rounds to run a testing on the testing set
+    - rounds: 1000                          # Number of rounds to run this training. We use 1000 in our paper, while it may converge w/ ~400 rounds
+    - filter_less: 21                       # Remove clients w/ less than 21 samples
+    - num_loaders: 2
+    - local_steps: 10
+    - learning_rate: 0.01
+    - batch_size: 20
+    - test_bsz: 32
+    - overcommitment: 1.3
+    - overcommit_weight: 0.4
+    - fl_method: STC
+    - sampling_strategy: UNIFORM
+    - sticky_group_size: 120
+    - sticky_group_change_num: 6
+    - use_cuda: True
+    - total_mask_ratio: 0.3
+    - shared_mask_ratio: 0.24
+    - use_compensation: True
