@@ -237,7 +237,7 @@ parser.add_argument('--use_compensation', type=str, default='True')
 # A note on the augmentation_factor setting:
 # For our experiments, we set the augmentation_factor to 0.4 so the compute time is 0.4X of what is specified in the client_device_capacity dataset
 # There are two reasons for this setting: 
-# First, mobile processor ML training performance have improved significantly over this period. 
+# First, mobile processor ML training performance has improved significantly since the FedScale team collected the computation capacity data.
 # This setting is consistent with the latest device computation capacity. (https://ai-benchmark.com/ranking.html)
 # Second, our work focuses on the setting where communication is the main bottleneck. Section 5.4 considers other scenarios where computation becomes a more significant bottleneck.
 parser.add_argument('--augmentation_factor', type=float, default=0.4, help="Augmentation factor for finding client compute latency")

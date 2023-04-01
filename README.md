@@ -2,7 +2,7 @@
 
 This repository contains the artifact for **GlueFL: Reconciling Client Sampling and Model Masking for Bandwidth Efficient Federated Learning** accepted at the *Sixth Conference on Machine Learning and Systems* (**MLSys 2023**). 
 
-GlueFL is built as a component on top of the FedScale platform. The main GlueFL logic is located in the `./examples/gluefl` directory which contains the sticky sampling logic and mask shifting logic. GlueFL also adds several minor modifications to the `./fedscale` directory.
+GlueFL is built as a component on top of the FedScale platform. The main GlueFL logic is located in the `./examples/gluefl` directory which contains both sticky sampling and mask shifting. GlueFL also adds several minor modifications to the `./fedscale` directory.
 
 ## Getting Started and Running Experiments
 To run experiments using GlueFL, you should first set up FedScale following the standard [FedScale installation instructions](#quick-installation-linux).
@@ -54,7 +54,9 @@ cat job_name_logging | grep 'Training loss'
 # To view the top-1 and top-5 accuracy
 cat job_name_logging | grep 'FL Testing'
 # To view the current bandwidth usage and training time
-cat job_name_logging | grep -A 9 "Wall clock:"
+cat job_name_logging | grep -A 9 'Wall clock:'
+# To view the bandwidth usage and training time of a particular round (for example, 500)
+cat job_name_logging | grep -A 9 'round: 500'
 ```
 
 You can also find logs just for the aggregator and executor in the directory specified by the `log_path` setting.
